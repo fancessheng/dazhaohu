@@ -1,0 +1,160 @@
+<!-- 首页 - 简历上传 + 岗位信息 + 生成话术 -->
+<view class="container">
+  <!-- 顶部次数提示 -->
+  <view class="quota-bar">
+    <view class="quota-info">
+      <text class="quota-label">今日剩余</text>
+      <text class="quota-count">{{dailyCount}}</text>
+      <text class="quota-label">次</text>
+      <text wx:if="{{isPremium}}" class="tag tag-success">高级会员</text>
+    </view>
+    <view wx:if="{{dailyCount === 0 && !isPremium}}" class="unlock-btn" bindtap="watchAd">
+      看广告解锁10次 ▶
+    </view>
+  </view>
+
+  <!-- 步骤一：简历信息 -->
+  <view class="card">
+    <view class="step-header">
+      <view class="step-badge">1</view>
+      <text class="step-title">我的简历</text>
+    </view>
+    <view class="step-desc">AI 需要了解你的优势才能写出针对性话术</view>
+
+    <view class="resume-modes">
+      <!-- 模式切换 -->
+      <view class="mode-tabs">
+        <view class="mode-tab {{resumeMode === 'upload' ? 'active' : ''}}" bindtap="switchResumeMode" data-mode="upload">上传文件</view>
+        <view class="mode-tab {{resumeMode === 'paste' ? 'active' : ''}}" bindtap="switchResumeMode" data-mode="paste">粘贴文字</view>
+      </view>
+
+      <!-- 上传模式 -->
+      <view wx:if="{{resumeMode === 'upload'}}" class="upload-area" bindtap="uploadResume">
+        <block wx:if="{{!resumeFile}}">
+          <view class="upload-icon">📄</view>
+          <view class="upload-text">点击上传简历</view>
+          <view class="upload-hint">支持 PDF、Word、图片格式</view>
+        </block>
+        <block wx:else>
+          <view class="upload-icon">✅</view>
+          <view class="upload-text">{{resumeFile.name}}</view>
+          <view class="upload-hint">点击重新上传</view>
+        </block>
+      </view>
+
+      <!-- 粘贴模式 -->
+      <view wx:if="{{resumeMode === 'paste'}}" class="textarea-wrapper">
+        <textarea 
+          placeholder="请在此粘贴你的简历内容，包括：教育背景、工作经历、项目经验、技能特长等…"
+          value="{{resumeText}}"
+          bindinput="onResumeInput"
+          maxlength="5000"
+          auto-height
+        />
+        <view class="char-count">{{resumeText.length}}/5000</view>
+      </view>
+
+      <!-- 简历解析状态 -->
+      <view wx:if="{{resumeParsed}}" class="parse-success">
+        <text class="parse-icon">✨</text>
+        <text>简历解析完成</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 步骤二：岗位信息 -->
+  <view class="card">
+    <view class="step-header">
+      <view class="step-badge">2</view>
+      <text class="step-title">岗位信息</text>
+    </view>
+    <view class="step-desc">获取你想申请的岗位要求，让话术更有针对性</view>
+
+    <view class="mode-tabs">
+      <view class="mode-tab {{jdMode === 'screenshot' ? 'active' : ''}}" bindtap="switchJDMode" data-mode="screenshot">截图识别</view>
+      <view class="mode-tab {{jdMode === 'paste' ? 'active' : ''}}" bindtap="switchJDMode" data-mode="paste">粘贴JD</view>
+    </view>
+
+    <!-- 截图模式 -->
+    <view wx:if="{{jdMode === 'screenshot'}}" class="upload-area" bindtap="uploadScreenshot">
+      <block wx:if="{{!jdImage}}">
+        <view class="upload-icon">📸</view>
+        <view class="upload-text">上传岗位截图</view>
+        <view class="upload-hint">在 BOSS 直聘页面截图岗位信息即可</view>
+      </block>
+      <block wx:else>
+        <image src="{{jdImage}}" mode="widthFix" class="jd-preview" />
+        <view class="upload-hint">点击重新上传</view>
+      </block>
+    </view>
+
+    <!-- 粘贴模式 -->
+    <view wx:if="{{jdMode === 'paste'}}" class="textarea-wrapper">
+      <textarea 
+        placeholder="请粘贴招聘岗位的职责描述（JD），包括：岗位名称、职责要求、任职资格等…"
+        value="{{jdText}}"
+        bindinput="onJDInput"
+        maxlength="3000"
+        auto-height
+      />
+      <view class="char-count">{{jdText.length}}/3000</view>
+    </view>
+
+    <!-- 岗位解析状态 -->
+    <view wx:if="{{jdParsed}}" class="parse-success">
+      <text class="parse-icon">✨</text>
+      <text>岗位信息识别完成</text>
+    </view>
+  </view>
+
+  <!-- 步骤三：生成话术 -->
+  <view class="card">
+    <view class="step-header">
+      <view class="step-badge">3</view>
+      <text class="step-title">生成打招呼话术</text>
+    </view>
+
+    <!-- 生成按钮 -->
+    <button 
+      class="btn-primary generate-btn"
+      bindtap="generateScript"
+      loading="{{isGenerating}}"
+      disabled="{{!canGenerate}}"
+    >
+      {{isGenerating ? 'AI 正在撰写中…' : '✨ AI 生成打招呼话术'}}
+    </button>
+
+    <!-- 无法生成时的提示 -->
+    <view wx:if="{{!canGenerate && !isGenerating}}" class="generate-hint">
+      <text wx:if="{{dailyCount === 0 && !isPremium}}">今日次数已用完，点击顶部按钮看广告解锁</text>
+      <text wx:elif="{{!hasResume}}">请先上传或粘贴简历信息</text>
+      <text wx:elif="{{!hasJD}}">请先上传截图或粘贴岗位信息</text>
+    </view>
+
+    <!-- 生成状态提示 -->
+    <view wx:if="{{isGenerating}}" class="generating-status">
+      <view class="generating-step {{currentStep >= 1 ? 'done' : ''}}">
+        <view class="step-dot"></view>
+        <text>分析你的简历优势</text>
+      </view>
+      <view class="generating-step {{currentStep >= 2 ? 'done' : ''}}">
+        <view class="step-dot"></view>
+        <text>理解岗位核心要求</text>
+      </view>
+      <view class="generating-step {{currentStep >= 3 ? 'done' : ''}}">
+        <view class="step-dot"></view>
+        <text>撰写个性化话术</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 广告组件 -->
+<ad 
+  wx:if="{{showAd}}"
+  unit-id="your-ad-unit-id"
+  bindload="onAdLoad"
+  binderror="onAdError"
+  bindclose="onAdClose"
+  type="video"
+/>

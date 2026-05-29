@@ -1,0 +1,9 @@
+{
+  "name": "userManager",
+  "version": "1.0.0",
+  "description": "用户管理云函数 - 登录、次数管理、会员解锁",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~3.0.0"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "parseJD",
+  "version": "1.0.0",
+  "description": "岗位信息解析云函数 - OCR识别BOSS直聘截图中的岗位信息",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~3.0.0"
+  }
+}

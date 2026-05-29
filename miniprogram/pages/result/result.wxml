@@ -1,0 +1,55 @@
+<!-- 话术结果页 -->
+<view class="container">
+  <!-- 成功提示 -->
+  <view class="success-header">
+    <view class="success-icon">🎉</view>
+    <view class="success-title">AI 话术已生成</view>
+    <view wx:if="{{jobTitle}}" class="success-subtitle">针对"{{jobTitle}}"岗位定制</view>
+    <view class="success-tips">已自动复制到剪贴板，可直接去 BOSS 直聘粘贴使用</view>
+  </view>
+
+  <!-- 话术内容卡片 -->
+  <view class="card script-card">
+    <view class="card-header">
+      <text class="card-title">📝 打招呼话术</text>
+      <view class="copy-btn" bindtap="copyScript">
+        <text>{{copied ? '✅ 已复制' : '📋 复制'}}</text>
+      </view>
+    </view>
+
+    <view class="script-content">
+      <text class="script-text" user-select="true">{{script}}</text>
+    </view>
+
+    <!-- 话术亮点 -->
+    <view wx:if="{{highlights.length}}" class="script-highlights">
+      <view class="highlights-title">💡 话术亮点</view>
+      <view wx:for="{{highlights}}" wx:key="index" class="highlight-item">
+        <text class="highlight-dot">•</text>
+        <text>{{item}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <button class="btn-primary" bindtap="copyScript">
+      📋 {{copied ? '已复制' : '一键复制话术'}}
+    </button>
+    <button class="btn-outline" bindtap="regenerate">
+      🔄 重新生成
+    </button>
+    <button class="btn-outline" bindtap="goHome">
+      🏠 返回首页
+    </button>
+  </view>
+
+  <!-- 使用提示 -->
+  <view class="card tips-card">
+    <view class="tips-title">💪 使用小贴士</view>
+    <view class="tips-item">① 打开 BOSS 直聘，找到目标岗位</view>
+    <view class="tips-item">② 点击"立即沟通"</view>
+    <view class="tips-item">③ 长按输入框，粘贴生成的话术</view>
+    <view class="tips-item">④ 可根据实际情况微调后发送</view>
+  </view>
+</view>

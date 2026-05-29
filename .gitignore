@@ -1,0 +1,21 @@
+# WeChat Mini Program
+miniprogram_npm/
+node_modules/
+
+# Cloud development
+cloudfunctions/**/node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary
+*.log
+*.tmp

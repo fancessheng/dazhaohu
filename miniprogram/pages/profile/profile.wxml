@@ -1,0 +1,107 @@
+<!-- 个人中心页 -->
+<view class="container">
+  <!-- 用户信息区域 -->
+  <view class="user-header">
+    <view class="avatar">
+      <image wx:if="{{avatarUrl}}" src="{{avatarUrl}}" class="avatar-img" />
+      <text wx:else class="avatar-placeholder">👤</text>
+    </view>
+    <view class="user-name">{{nickName || '求职者'}}</view>
+    <view class="user-id">ID: {{userId}}</view>
+  </view>
+
+  <!-- 会员状态卡片 -->
+  <view class="card membership-card">
+    <view class="membership-header">
+      <text class="membership-title">
+        {{isPremium ? '👑 高级会员' : '🎯 免费会员'}}
+      </text>
+      <text class="tag {{isPremium ? 'tag-success' : 'tag-warning'}}">
+        {{isPremium ? '已激活' : '基础版'}}
+      </text>
+    </view>
+
+    <view class="quota-display">
+      <view class="quota-item">
+        <text class="quota-value">{{dailyCount}}</text>
+        <text class="quota-label">今日剩余次数</text>
+      </view>
+      <view class="quota-divider"></view>
+      <view class="quota-item">
+        <text class="quota-value">10</text>
+        <text class="quota-label">每日免费额度</text>
+      </view>
+    </view>
+
+    <view wx:if="{{!isPremium}}" class="upgrade-section">
+      <text class="upgrade-desc">看一段广告即可解锁高级会员，额外获得 10 次生成机会</text>
+      <button class="btn-primary upgrade-btn" bindtap="watchAd">
+        🎬 看广告解锁高级会员
+      </button>
+    </view>
+
+    <view wx:else class="premium-info">
+      <text class="premium-desc">✅ 高级会员已激活，今日可额外使用 10 次</text>
+    </view>
+  </view>
+
+  <!-- 我的简历 -->
+  <view class="card">
+    <view class="card-title">📄 我的简历</view>
+    <view wx:if="{{resumeContent}}" class="resume-preview">
+      <text class="resume-text">{{resumeContent}}</text>
+      <view class="resume-actions">
+        <text class="action-link" bindtap="editResume">编辑</text>
+        <text class="action-link danger" bindtap="clearResume">清空</text>
+      </view>
+    </view>
+    <view wx:else class="empty-state">
+      <text class="empty-icon">📝</text>
+      <text class="empty-text">还没有保存简历</text>
+      <button class="btn-outline" style="margin-top: 24rpx;" bindtap="goToEditResume">
+        去上传简历
+      </button>
+    </view>
+  </view>
+
+  <!-- 使用说明 -->
+  <view class="card">
+    <view class="card-title">📖 使用说明</view>
+    <view class="guide-list">
+      <view class="guide-item">
+        <text class="guide-num">1</text>
+        <view class="guide-content">
+          <text class="guide-title">上传你的简历</text>
+          <text class="guide-desc">支持 PDF、Word 文件或直接粘贴文字，AI 将分析你的优势</text>
+        </view>
+      </view>
+      <view class="guide-item">
+        <text class="guide-num">2</text>
+        <view class="guide-content">
+          <text class="guide-title">输入岗位信息</text>
+          <text class="guide-desc">截图 BOSS 直聘岗位页面或粘贴 JD 文字</text>
+        </view>
+      </view>
+      <view class="guide-item">
+        <text class="guide-num">3</text>
+        <view class="guide-content">
+          <text class="guide-title">AI 生成话术</text>
+          <text class="guide-desc">点击生成，获得针对该岗位定制的打招呼文案</text>
+        </view>
+      </view>
+      <view class="guide-item">
+        <text class="guide-num">4</text>
+        <view class="guide-content">
+          <text class="guide-title">复制使用</text>
+          <text class="guide-desc">一键复制，粘贴到 BOSS 直聘的打招呼框即可</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部信息 -->
+  <view class="footer">
+    <text class="footer-text">求职打招呼 v1.0.0</text>
+    <text class="footer-text">个人开发者作品</text>
+  </view>
+</view>

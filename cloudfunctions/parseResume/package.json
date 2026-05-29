@@ -1,0 +1,9 @@
+{
+  "name": "parseResume",
+  "version": "1.0.0",
+  "description": "简历解析云函数 - 解析PDF/Word/图片中的简历内容",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~3.0.0"
+  }
+}

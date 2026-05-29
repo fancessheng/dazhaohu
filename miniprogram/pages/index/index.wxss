@@ -1,0 +1,182 @@
+/* 首页样式 */
+.container {
+  padding: 24rpx;
+  padding-bottom: 48rpx;
+}
+
+/* 次数提示栏 */
+.quota-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 28rpx;
+  background: linear-gradient(135deg, #4F46E5 0%, #818CF8 100%);
+  border-radius: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.quota-info {
+  display: flex;
+  align-items: baseline;
+  gap: 8rpx;
+}
+
+.quota-label {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 26rpx;
+}
+
+.quota-count {
+  color: #FFFFFF;
+  font-size: 48rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.unlock-btn {
+  padding: 12rpx 24rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2rpx solid rgba(255, 255, 255, 0.4);
+  border-radius: 30rpx;
+  color: #FFFFFF;
+  font-size: 24rpx;
+}
+
+/* 步骤标题 */
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: 8rpx;
+}
+
+.step-badge {
+  width: 40rpx;
+  height: 40rpx;
+  background: var(--color-primary);
+  color: #FFFFFF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.step-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.step-desc {
+  font-size: 24rpx;
+  color: var(--color-text-muted);
+  margin-left: 56rpx;
+  margin-bottom: 24rpx;
+}
+
+/* 模式切换标签 */
+.mode-tabs {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 24rpx;
+}
+
+.mode-tab {
+  flex: 1;
+  text-align: center;
+  padding: 16rpx 0;
+  border-radius: 10rpx;
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  background: var(--color-bg);
+  transition: all 0.3s;
+}
+
+.mode-tab.active {
+  background: var(--color-primary-bg);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+/* 字数统计 */
+.char-count {
+  text-align: right;
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+  margin-top: 12rpx;
+}
+
+/* 解析成功状态 */
+.parse-success {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 20rpx;
+  padding: 16rpx 24rpx;
+  background: #F0FDF4;
+  border-radius: 10rpx;
+  font-size: 26rpx;
+  color: #059669;
+}
+
+.parse-icon {
+  font-size: 32rpx;
+}
+
+/* 岗位截图预览 */
+.jd-preview {
+  width: 100%;
+  border-radius: 12rpx;
+  margin-bottom: 8rpx;
+}
+
+/* 生成按钮 */
+.generate-btn {
+  margin-top: 8rpx;
+  padding: 28rpx !important;
+  font-size: 32rpx !important;
+  font-weight: 600 !important;
+  border-radius: 14rpx !important;
+}
+
+.generate-hint {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 26rpx;
+  margin-top: 20rpx;
+}
+
+/* 生成中的步骤动画 */
+.generating-status {
+  margin-top: 32rpx;
+  padding: 0 16rpx;
+}
+
+.generating-step {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx 0;
+  font-size: 26rpx;
+  color: var(--color-text-muted);
+}
+
+.generating-step.done {
+  color: var(--color-success);
+}
+
+.step-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: var(--color-border);
+  flex-shrink: 0;
+  transition: all 0.3s;
+}
+
+.generating-step.done .step-dot {
+  background: var(--color-success);
+}

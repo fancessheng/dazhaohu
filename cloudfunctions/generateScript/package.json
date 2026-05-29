@@ -1,0 +1,9 @@
+{
+  "name": "generateScript",
+  "version": "1.0.0",
+  "description": "AI话术生成云函数 - 调用腾讯混元生成打招呼文案",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "~3.0.0"
+  }
+}
