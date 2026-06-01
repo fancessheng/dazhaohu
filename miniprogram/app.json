@@ -6,14 +6,14 @@
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#4F46E5",
+    "navigationBarBackgroundColor": "#0ABFBC",
     "navigationBarTitleText": "求职打招呼",
     "navigationBarTextStyle": "white",
-    "backgroundColor": "#F5F5F5"
+    "backgroundColor": "#F4F7F8"
   },
   "tabBar": {
     "color": "#999999",
-    "selectedColor": "#4F46E5",
+    "selectedColor": "#0ABFBC",
     "backgroundColor": "#FFFFFF",
     "borderStyle": "black",
     "list": [
