@@ -1,18 +1,19 @@
 /* app.wxss - 全局样式 */
 
-/* 颜色变量 */
+/* 颜色变量 - Tiffany 蓝主色调 */
 page {
-  --color-primary: #4F46E5;
-  --color-primary-light: #818CF8;
-  --color-primary-bg: #EEF2FF;
+  --color-primary: #0ABFBC;
+  --color-primary-light: #4DD9D6;
+  --color-primary-dark: #089E9B;
+  --color-primary-bg: #E6F9F8;
   --color-success: #10B981;
   --color-warning: #F59E0B;
   --color-danger: #EF4444;
-  --color-text-primary: #1F2937;
-  --color-text-secondary: #6B7280;
+  --color-text-primary: #1A1A2E;
+  --color-text-secondary: #5C6370;
   --color-text-muted: #9CA3AF;
-  --color-border: #E5E7EB;
-  --color-bg: #F5F5F5;
+  --color-border: #E8ECEF;
+  --color-bg: #F4F7F8;
   --color-white: #FFFFFF;
 
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
@@ -65,12 +66,12 @@ page {
 }
 
 .btn-primary:active {
-  background: #4338CA;
+  background: var(--color-primary-dark);
 }
 
 .btn-primary[disabled] {
-  background: #C7D2FE;
-  color: #E0E7FF;
+  background: #B2E8E7;
+  color: #FFFFFF;
 }
 
 .btn-outline {

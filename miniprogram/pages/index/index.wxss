@@ -1,90 +1,282 @@
-/* 首页样式 */
-.container {
-  padding: 24rpx;
-  padding-bottom: 48rpx;
+/* 首页样式 - Tiffany 蓝 清新简洁风 */
+
+.page {
+  padding: 0 0 60rpx 0;
+  background: var(--color-bg);
+  min-height: 100vh;
 }
 
-/* 次数提示栏 */
-.quota-bar {
+/* ========== Header ========== */
+.header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20rpx 28rpx;
-  background: linear-gradient(135deg, #4F46E5 0%, #818CF8 100%);
-  border-radius: 16rpx;
-  margin-bottom: 24rpx;
+  padding: 28rpx 32rpx 24rpx;
+  background: var(--color-white);
+  border-bottom: 1rpx solid var(--color-border);
 }
 
-.quota-info {
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.header-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: 1rpx;
+}
+
+.header-sub {
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+}
+
+.quota-pill {
   display: flex;
   align-items: baseline;
-  gap: 8rpx;
+  gap: 4rpx;
+  background: var(--color-primary-bg);
+  border-radius: 30rpx;
+  padding: 10rpx 22rpx;
+  position: relative;
 }
 
-.quota-label {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 26rpx;
-}
-
-.quota-count {
-  color: #FFFFFF;
-  font-size: 48rpx;
+.quota-num {
+  font-size: 38rpx;
   font-weight: 700;
+  color: var(--color-primary);
   line-height: 1;
 }
 
-.unlock-btn {
-  padding: 12rpx 24rpx;
-  background: rgba(255, 255, 255, 0.2);
-  border: 2rpx solid rgba(255, 255, 255, 0.4);
-  border-radius: 30rpx;
-  color: #FFFFFF;
-  font-size: 24rpx;
+.quota-label {
+  font-size: 22rpx;
+  color: var(--color-primary);
 }
 
-/* 步骤标题 */
-.step-header {
+.premium-dot {
+  font-size: 16rpx;
+  color: #F59E0B;
+  margin-left: 4rpx;
+}
+
+/* ========== Section 通用 ========== */
+.section {
+  background: var(--color-white);
+  margin: 20rpx 24rpx 0;
+  border-radius: 18rpx;
+  padding: 28rpx 28rpx 24rpx;
+  box-shadow: 0 2rpx 16rpx rgba(10, 191, 188, 0.06);
+}
+
+.section-header {
   display: flex;
   align-items: center;
-  gap: 16rpx;
-  margin-bottom: 8rpx;
+  gap: 14rpx;
+  margin-bottom: 6rpx;
 }
 
-.step-badge {
-  width: 40rpx;
-  height: 40rpx;
+.section-badge {
+  width: 38rpx;
+  height: 38rpx;
   background: var(--color-primary);
   color: #FFFFFF;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24rpx;
-  font-weight: 600;
+  font-size: 22rpx;
+  font-weight: 700;
   flex-shrink: 0;
 }
 
-.step-title {
-  font-size: 32rpx;
+.section-title {
+  font-size: 30rpx;
   font-weight: 600;
   color: var(--color-text-primary);
 }
 
-.step-desc {
-  font-size: 24rpx;
-  color: var(--color-text-muted);
-  margin-left: 56rpx;
-  margin-bottom: 24rpx;
+.section-required {
+  font-size: 22rpx;
+  color: #F87171;
+  margin-left: auto;
 }
 
-/* 模式切换标签 */
+.section-desc {
+  font-size: 24rpx;
+  color: var(--color-text-muted);
+  margin: 6rpx 0 20rpx 52rpx;
+}
+
+/* ========== 岗位快选标签 ========== */
+.job-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin: 16rpx 0 8rpx;
+}
+
+.job-tag {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 14rpx 22rpx;
+  border-radius: 40rpx;
+  background: var(--color-bg);
+  border: 2rpx solid var(--color-border);
+  transition: all 0.2s;
+}
+
+.job-tag-active {
+  background: var(--color-primary-bg);
+  border-color: var(--color-primary);
+}
+
+.job-tag-icon {
+  font-size: 28rpx;
+  line-height: 1;
+}
+
+.job-tag-name {
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.job-tag-active .job-tag-name {
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+/* 自定义岗位 */
+.custom-job-row {
+  margin-top: 16rpx;
+  padding: 12rpx 0;
+}
+
+.custom-job-label {
+  font-size: 24rpx;
+  color: var(--color-text-muted);
+}
+
+.custom-job-input {
+  margin-top: 10rpx;
+  border: 2rpx solid var(--color-primary-light);
+  border-radius: 12rpx;
+  padding: 18rpx 22rpx;
+  background: var(--color-primary-bg);
+}
+
+.custom-job-input input {
+  width: 100%;
+  font-size: 28rpx;
+  color: var(--color-text-primary);
+}
+
+/* 已选岗位提示条 */
+.selected-job-bar {
+  margin-top: 16rpx;
+  padding: 14rpx 20rpx;
+  background: var(--color-primary-bg);
+  border-radius: 10rpx;
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.selected-job-label {
+  font-size: 24rpx;
+  color: var(--color-text-muted);
+}
+
+.selected-job-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* ========== 简历折叠入口 ========== */
+.resume-entry {
+  margin-top: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18rpx 20rpx;
+  background: var(--color-bg);
+  border-radius: 12rpx;
+  border: 2rpx solid var(--color-border);
+}
+
+.resume-entry-left {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.resume-entry-icon {
+  font-size: 36rpx;
+}
+
+.resume-entry-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.resume-entry-desc {
+  display: block;
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+  margin-top: 4rpx;
+}
+
+.resume-entry-arrow {
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+}
+
+/* 简历展开面板 */
+.resume-panel {
+  margin-top: 16rpx;
+  padding: 20rpx;
+  background: var(--color-bg);
+  border-radius: 12rpx;
+  border: 2rpx solid var(--color-border);
+}
+
+.resume-mode-tabs {
+  display: flex;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.rtab {
+  flex: 1;
+  text-align: center;
+  padding: 14rpx 0;
+  border-radius: 10rpx;
+  font-size: 26rpx;
+  color: var(--color-text-secondary);
+  background: var(--color-white);
+}
+
+.rtab-active {
+  background: var(--color-primary-bg);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+/* ========== 岗位输入 ========== */
 .mode-tabs {
   display: flex;
   gap: 16rpx;
-  margin-bottom: 24rpx;
+  margin: 14rpx 0 18rpx;
 }
 
-.mode-tab {
+.mtab {
   flex: 1;
   text-align: center;
   padding: 16rpx 0;
@@ -92,80 +284,95 @@
   font-size: 26rpx;
   color: var(--color-text-secondary);
   background: var(--color-bg);
-  transition: all 0.3s;
 }
 
-.mode-tab.active {
+.mtab-active {
   background: var(--color-primary-bg);
   color: var(--color-primary);
   font-weight: 500;
 }
 
-/* 字数统计 */
-.char-count {
-  text-align: right;
-  font-size: 22rpx;
-  color: var(--color-text-muted);
-  margin-top: 12rpx;
+/* 截图预览 */
+.jd-preview {
+  width: 100%;
+  border-radius: 10rpx;
+  margin-bottom: 8rpx;
 }
 
-/* 解析成功状态 */
-.parse-success {
-  display: flex;
-  align-items: center;
-  gap: 12rpx;
-  margin-top: 20rpx;
-  padding: 16rpx 24rpx;
+/* 解析成功 */
+.parse-ok {
+  margin-top: 16rpx;
+  padding: 14rpx 20rpx;
   background: #F0FDF4;
   border-radius: 10rpx;
   font-size: 26rpx;
   color: #059669;
 }
 
-.parse-icon {
-  font-size: 32rpx;
-}
-
-/* 岗位截图预览 */
-.jd-preview {
-  width: 100%;
-  border-radius: 12rpx;
-  margin-bottom: 8rpx;
-}
-
-/* 生成按钮 */
-.generate-btn {
-  margin-top: 8rpx;
-  padding: 28rpx !important;
-  font-size: 32rpx !important;
-  font-weight: 600 !important;
-  border-radius: 14rpx !important;
-}
-
-.generate-hint {
-  text-align: center;
-  color: var(--color-text-muted);
-  font-size: 26rpx;
+/* ========== 生成区 ========== */
+.generate-section {
   margin-top: 20rpx;
 }
 
-/* 生成中的步骤动画 */
-.generating-status {
-  margin-top: 32rpx;
-  padding: 0 16rpx;
+.btn-generate {
+  width: 100%;
+  margin-top: 16rpx;
+  padding: 30rpx 0 !important;
+  background: var(--color-primary) !important;
+  color: #FFFFFF !important;
+  font-size: 32rpx !important;
+  font-weight: 600 !important;
+  border-radius: 16rpx !important;
+  border: none !important;
+  box-shadow: 0 8rpx 24rpx rgba(10, 191, 188, 0.3);
+  letter-spacing: 2rpx;
 }
 
-.generating-step {
+.btn-generate::after {
+  border: none;
+}
+
+.btn-disabled {
+  background: #B2E8E7 !important;
+  box-shadow: none;
+}
+
+.hint-row {
+  margin-top: 16rpx;
+  text-align: center;
+}
+
+.hint-text {
+  font-size: 24rpx;
+  color: var(--color-text-muted);
+}
+
+.hint-text.warn {
+  color: #F87171;
+}
+
+.hint-link {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+/* 生成步骤动画 */
+.steps-anim {
+  margin-top: 28rpx;
+  padding: 0 8rpx;
+}
+
+.step-item {
   display: flex;
   align-items: center;
   gap: 16rpx;
-  padding: 16rpx 0;
+  padding: 12rpx 0;
   font-size: 26rpx;
   color: var(--color-text-muted);
 }
 
-.generating-step.done {
-  color: var(--color-success);
+.step-item.step-done {
+  color: var(--color-primary);
 }
 
 .step-dot {
@@ -174,9 +381,59 @@
   border-radius: 50%;
   background: var(--color-border);
   flex-shrink: 0;
-  transition: all 0.3s;
+  transition: background 0.3s;
 }
 
-.generating-step.done .step-dot {
-  background: var(--color-success);
+.step-item.step-done .step-dot {
+  background: var(--color-primary);
+}
+
+/* 通用文本域 */
+.textarea-wrapper {
+  border: 2rpx solid var(--color-border);
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  background: var(--color-white);
+}
+
+.textarea-wrapper textarea {
+  width: 100%;
+  min-height: 180rpx;
+  font-size: 28rpx;
+  line-height: 1.7;
+  color: var(--color-text-primary);
+}
+
+.char-count {
+  text-align: right;
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+  margin-top: 12rpx;
+}
+
+/* 上传区域 */
+.upload-area {
+  border: 2rpx dashed var(--color-border);
+  border-radius: 14rpx;
+  padding: 44rpx 32rpx;
+  text-align: center;
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.upload-icon {
+  font-size: 60rpx;
+}
+
+.upload-text {
+  font-size: 28rpx;
+  color: var(--color-text-secondary);
+}
+
+.upload-hint {
+  font-size: 24rpx;
+  color: var(--color-text-muted);
 }

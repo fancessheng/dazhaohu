@@ -1,130 +1,178 @@
-// 首页逻辑 - 简历上传 + 岗位信息 + 生成话术
+// 首页逻辑 - 求职打招呼
 const app = getApp();
+
+// 10个 0-3年求职者最常选择的岗位（基于BOSS直聘热门岗位调研）
+const JOB_TYPES = [
+  { id: 'media', name: '新媒体运营', icon: '📱', desc: '内容创作、社媒运营、粉丝增长' },
+  { id: 'design', name: '平面设计', icon: '🎨', desc: 'VI设计、海报、品牌视觉' },
+  { id: 'fe', name: '前端开发', icon: '💻', desc: 'HTML/CSS/JS、Vue、React' },
+  { id: 'product', name: '产品助理', icon: '📊', desc: '需求分析、原型设计、产品迭代' },
+  { id: 'operate', name: '电商运营', icon: '🛒', desc: '淘宝/抖店运营、直播带货' },
+  { id: 'sale', name: '销售/BD', icon: '🤝', desc: '客户开发、商务拓展、销售转化' },
+  { id: 'advert', name: '信息流优化', icon: '📈', desc: '竞价推广、ROI优化、数据分析' },
+  { id: 'hr', name: 'HR招聘', icon: '👥', desc: '简历筛选、面试安排、员工关系' },
+  { id: 'finance', name: '财务/会计', icon: '💰', desc: '会计核算、财务报表、税务申报' },
+  { id: 'customer', name: '客服/运营', icon: '🎧', desc: '用户服务、投诉处理、满意度提升' },
+];
 
 Page({
   data: {
-    // 用户信息
+    // 用户状态
     dailyCount: 0,
     isPremium: false,
 
-    // 简历
-    resumeMode: 'paste',        // 'upload' | 'paste'
-    resumeFile: null,           // 上传的文件对象
-    resumeText: '',             // 粘贴的简历文字
-    resumeParsed: false,        // 简历是否已解析
-    resumeContent: '',          // 解析后的简历内容
+    // 岗位选择
+    jobTypes: JOB_TYPES,
+    selectedJobId: '',       // 快选标签id
+    currentJobName: '',      // 最终使用的岗位名称
+    currentJobDesc: '',      // 岗位描述
+    customJobExpanded: false, // 是否展开自定义输入
+    customJobName: '',        // 自定义岗位名
 
-    // 岗位信息
-    jdMode: 'paste',            // 'screenshot' | 'paste'
-    jdImage: '',                // 截图临时路径
-    jdText: '',                 // 粘贴的JD文字
-    jdParsed: false,            // JD是否已识别
-    jdContent: '',              // 解析后的JD内容
+    // 简历
+    resumeExpanded: false,
+    resumeMode: 'paste',
+    resumeFile: null,
+    resumeText: '',
+    resumeParsed: false,
+    resumeContent: '',
+
+    // 岗位信息 JD
+    jdMode: 'paste',
+    jdImage: '',
+    jdText: '',
+    jdParsed: false,
+    jdContent: '',
 
     // 生成状态
     isGenerating: false,
-    currentStep: 0,             // 当前生成步骤
+    currentStep: 0,
 
     // 广告
-    showAd: false
+    showAd: false,
   },
 
-  // ==================== 生命周期 ====================
+  // ======= 生命周期 =======
 
   onLoad() {
     this.loadUserData();
   },
 
   onShow() {
-    // 每次显示页面刷新次数
     this.loadUserData();
   },
 
-  // ==================== 计算属性 ====================
+  // ======= 用户数据 =======
 
-  get canGenerate() {
-    return this.data.dailyCount > 0
-      || (this.data.dailyCount === 0 && this.data.isPremium);
-  },
-
-  get hasResume() {
-    return this.data.resumeParsed || this.data.resumeText.trim().length > 10;
-  },
-
-  get hasJD() {
-    return this.data.jdParsed || this.data.jdText.trim().length > 10;
-  },
-
-  // ==================== 用户数据 ====================
-
-  async loadUserData() {
-    const userData = app.globalData;
+  loadUserData() {
+    const g = app.globalData || {};
     this.setData({
-      dailyCount: userData.dailyCount || 0,
-      isPremium: userData.isPremium || false
+      dailyCount: g.dailyCount || 0,
+      isPremium: g.isPremium || false,
     });
   },
 
-  // ==================== 简历操作 ====================
-
-  switchResumeMode(e) {
-    const mode = e.currentTarget.dataset.mode;
-    this.setData({ resumeMode: mode });
+  // 点击次数区域
+  onQuotaTap() {
+    const { dailyCount, isPremium } = this.data;
+    if (dailyCount <= 0 && !isPremium) {
+      wx.showModal({
+        title: '今日次数已用完',
+        content: '观看一段短视频，解锁今日额外 10 次使用机会',
+        confirmText: '看广告解锁',
+        cancelText: '算了',
+        success: (res) => {
+          if (res.confirm) this.watchAd();
+        }
+      });
+    } else {
+      wx.showToast({
+        title: `今日还剩 ${dailyCount} 次`,
+        icon: 'none',
+      });
+    }
   },
 
-  // 上传简历文件
+  // ======= 岗位选择 =======
+
+  selectJob(e) {
+    const { id, name, desc } = e.currentTarget.dataset;
+    const isSame = this.data.selectedJobId === id;
+    this.setData({
+      selectedJobId: isSame ? '' : id,
+      currentJobName: isSame ? '' : name,
+      currentJobDesc: isSame ? '' : desc,
+      customJobExpanded: false,
+      customJobName: '',
+    });
+  },
+
+  toggleCustomJob() {
+    const expand = !this.data.customJobExpanded;
+    this.setData({
+      customJobExpanded: expand,
+      // 展开时清空快选
+      selectedJobId: expand ? '' : this.data.selectedJobId,
+      currentJobName: expand ? (this.data.customJobName || '') : this.data.currentJobName,
+    });
+  },
+
+  onCustomJobInput(e) {
+    const val = e.detail.value;
+    this.setData({
+      customJobName: val,
+      currentJobName: val,
+      currentJobDesc: '',
+      selectedJobId: '',
+    });
+  },
+
+  // ======= 简历 =======
+
+  toggleResume() {
+    this.setData({ resumeExpanded: !this.data.resumeExpanded });
+  },
+
+  switchResumeMode(e) {
+    this.setData({ resumeMode: e.currentTarget.dataset.mode });
+  },
+
+  onResumeInput(e) {
+    this.setData({ resumeText: e.detail.value, resumeParsed: false });
+  },
+
   uploadResume() {
-    const that = this;
     wx.chooseMessageFile({
       count: 1,
       type: 'file',
       extension: ['pdf', 'doc', 'docx', 'png', 'jpg', 'jpeg'],
-      success(res) {
+      success: (res) => {
         const file = res.tempFiles[0];
-        that.setData({ 
-          resumeFile: file,
-          resumeParsed: false
-        });
-
-        // 显示加载中
+        this.setData({ resumeFile: file, resumeParsed: false });
         wx.showLoading({ title: '解析简历中…' });
-
-        // 上传到云存储并解析
-        that.parseResumeFile(file.path, file.name);
+        this.parseResumeFile(file.path, file.name);
       },
-      fail(err) {
-        if (err.errMsg.indexOf('cancel') === -1) {
+      fail: (err) => {
+        if (!err.errMsg.includes('cancel')) {
           wx.showToast({ title: '选择文件失败', icon: 'none' });
         }
       }
     });
   },
 
-  // 解析简历文件
   async parseResumeFile(filePath, fileName) {
     try {
-      // 先上传到云存储
       const cloudPath = `resumes/${Date.now()}_${fileName}`;
-      const uploadRes = await wx.cloud.uploadFile({
-        cloudPath: cloudPath,
-        filePath: filePath
-      });
-
-      // 调用云函数解析
+      const uploadRes = await wx.cloud.uploadFile({ cloudPath, filePath });
       const parseRes = await wx.cloud.callFunction({
         name: 'parseResume',
-        data: {
-          action: 'parse',
-          fileID: uploadRes.fileID,
-          fileName: fileName
-        }
+        data: { action: 'parse', fileID: uploadRes.fileID, fileName }
       });
-
       if (parseRes.result && parseRes.result.success) {
         this.setData({
           resumeParsed: true,
           resumeContent: parseRes.result.data.content,
-          resumeText: parseRes.result.data.content  // 同步到粘贴框
+          resumeText: parseRes.result.data.content,
         });
         wx.hideLoading();
         wx.showToast({ title: '简历解析成功', icon: 'success' });
@@ -133,152 +181,111 @@ Page({
       }
     } catch (err) {
       wx.hideLoading();
-      console.error('简历解析失败:', err);
-      wx.showToast({ 
-        title: '简历解析失败，请尝试粘贴文字', 
-        icon: 'none',
-        duration: 3000
-      });
+      wx.showToast({ title: '解析失败，可手动粘贴文字', icon: 'none', duration: 3000 });
     }
   },
 
-  // 粘贴简历文字
-  onResumeInput(e) {
-    this.setData({ 
-      resumeText: e.detail.value,
-      resumeParsed: false
-    });
-  },
-
-  // ==================== 岗位信息操作 ====================
+  // ======= 岗位信息 JD =======
 
   switchJDMode(e) {
-    const mode = e.currentTarget.dataset.mode;
-    this.setData({ jdMode: mode });
+    this.setData({ jdMode: e.currentTarget.dataset.mode });
   },
 
-  // 上传岗位截图
+  onJDInput(e) {
+    this.setData({ jdText: e.detail.value, jdParsed: false });
+  },
+
   uploadScreenshot() {
-    const that = this;
     wx.chooseMedia({
       count: 1,
       mediaType: ['image'],
       sourceType: ['album', 'camera'],
-      success(res) {
+      success: (res) => {
         const tempPath = res.tempFiles[0].tempFilePath;
-        that.setData({ 
-          jdImage: tempPath,
-          jdParsed: false
-        });
-
+        this.setData({ jdImage: tempPath, jdParsed: false });
         wx.showLoading({ title: '识别岗位信息…' });
-        that.parseJDScreenshot(tempPath);
+        this.parseJDScreenshot(tempPath);
       },
-      fail(err) {
-        if (err.errMsg.indexOf('cancel') === -1) {
+      fail: (err) => {
+        if (!err.errMsg.includes('cancel')) {
           wx.showToast({ title: '选择图片失败', icon: 'none' });
         }
       }
     });
   },
 
-  // 解析岗位截图
   async parseJDScreenshot(imagePath) {
     try {
-      // 先上传到云存储
       const cloudPath = `screenshots/${Date.now()}.png`;
-      const uploadRes = await wx.cloud.uploadFile({
-        cloudPath: cloudPath,
-        filePath: imagePath
-      });
-
-      // 调用云函数OCR识别
+      const uploadRes = await wx.cloud.uploadFile({ cloudPath, filePath: imagePath });
       const parseRes = await wx.cloud.callFunction({
         name: 'parseJD',
-        data: {
-          action: 'ocr',
-          fileID: uploadRes.fileID
-        }
+        data: { action: 'ocr', fileID: uploadRes.fileID }
       });
-
       if (parseRes.result && parseRes.result.success) {
         this.setData({
           jdParsed: true,
           jdContent: parseRes.result.data.content,
-          jdText: parseRes.result.data.content  // 同步到粘贴框
+          jdText: parseRes.result.data.content,
         });
         wx.hideLoading();
         wx.showToast({ title: '岗位信息识别成功', icon: 'success' });
       } else {
-        throw new Error(parseRes.result.message || '识别失败');
+        throw new Error('识别失败');
       }
     } catch (err) {
       wx.hideLoading();
-      console.error('岗位识别失败:', err);
-      wx.showToast({ 
-        title: '识别失败，请尝试粘贴文字', 
-        icon: 'none',
-        duration: 3000
-      });
+      wx.showToast({ title: '识别失败，请粘贴文字', icon: 'none', duration: 3000 });
     }
   },
 
-  // 粘贴JD文字
-  onJDInput(e) {
-    this.setData({ 
-      jdText: e.detail.value,
-      jdParsed: false
-    });
+  // ======= 生成话术 =======
+
+  get canGenerate() {
+    const { dailyCount, isPremium, currentJobName, jdText, jdParsed } = this.data;
+    const countOk = dailyCount > 0 || isPremium;
+    const jobOk = (currentJobName || '').length > 0;
+    const jdOk = jdParsed || (jdText || '').trim().length > 10;
+    return countOk && jobOk && jdOk;
   },
 
-  // ==================== 生成话术 ====================
+  get hasJD() {
+    return this.data.jdParsed || (this.data.jdText || '').trim().length > 10;
+  },
 
   generateScript() {
-    // 前置检查
-    if (this.data.dailyCount <= 0 && !this.data.isPremium) {
-      wx.showToast({ title: '今日次数已用完', icon: 'none' });
+    if (!this.canGenerate) {
+      if (this.data.dailyCount <= 0 && !this.data.isPremium) {
+        this.watchAd();
+      } else if (!this.data.currentJobName) {
+        wx.showToast({ title: '请先选择目标岗位', icon: 'none' });
+      } else {
+        wx.showToast({ title: '请填写投递职位信息', icon: 'none' });
+      }
       return;
     }
 
-    const resumeContent = this.data.resumeParsed 
-      ? this.data.resumeContent 
+    const resumeContent = this.data.resumeParsed
+      ? this.data.resumeContent
       : this.data.resumeText.trim();
-    const jdContent = this.data.jdParsed 
-      ? this.data.jdContent 
+
+    const jdContent = this.data.jdParsed
+      ? this.data.jdContent
       : this.data.jdText.trim();
 
-    if (!resumeContent || resumeContent.length < 10) {
-      wx.showToast({ title: '请先输入简历内容', icon: 'none' });
-      return;
-    }
-    if (!jdContent || jdContent.length < 10) {
-      wx.showToast({ title: '请先输入岗位信息', icon: 'none' });
-      return;
-    }
-
-    // 开始生成
     this.setData({ isGenerating: true, currentStep: 0 });
-
-    // 模拟步骤动画
     this.simulateSteps();
-
-    // 调用云函数
     this.callGenerateAPI(resumeContent, jdContent);
   },
 
-  // 模拟生成步骤动画
   simulateSteps() {
-    const steps = [1, 2, 3];
-    steps.forEach((step, index) => {
+    [1, 2, 3].forEach((step, i) => {
       setTimeout(() => {
-        if (this.data.isGenerating) {
-          this.setData({ currentStep: step });
-        }
-      }, (index + 1) * 800);
+        if (this.data.isGenerating) this.setData({ currentStep: step });
+      }, (i + 1) * 900);
     });
   },
 
-  // 调用 AI 生成接口
   async callGenerateAPI(resumeContent, jdContent) {
     try {
       const res = await wx.cloud.callFunction({
@@ -286,35 +293,32 @@ Page({
         data: {
           action: 'generate',
           resume: resumeContent,
-          jd: jdContent
+          jd: jdContent,
+          jobType: this.data.currentJobName,
         }
       });
 
       this.setData({ isGenerating: false, currentStep: 3 });
 
       if (res.result && res.result.success) {
-        // 减少可用次数
-        this.setData({ dailyCount: this.data.dailyCount - 1 });
-        app.globalData.dailyCount = this.data.dailyCount;
+        // 扣减次数
+        const newCount = Math.max(0, this.data.dailyCount - 1);
+        this.setData({ dailyCount: newCount });
+        app.globalData.dailyCount = newCount;
 
-        // 跳转到结果页
         wx.navigateTo({
-          url: `/pages/result/result?script=${encodeURIComponent(res.result.data.script)}&jobTitle=${encodeURIComponent(res.result.data.jobTitle || '')}`
+          url: `/pages/result/result?script=${encodeURIComponent(res.result.data.script)}&jobTitle=${encodeURIComponent(this.data.currentJobName || '')}`
         });
       } else {
         throw new Error(res.result.message || '生成失败');
       }
     } catch (err) {
       this.setData({ isGenerating: false });
-      console.error('生成话术失败:', err);
-      wx.showToast({ 
-        title: '生成失败，请稍后重试', 
-        icon: 'none' 
-      });
+      wx.showToast({ title: '生成失败，请稍后重试', icon: 'none' });
     }
   },
 
-  // ==================== 广告 ====================
+  // ======= 广告 =======
 
   watchAd() {
     this.setData({ showAd: true });
@@ -326,13 +330,12 @@ Page({
 
   onAdError(err) {
     console.error('广告加载失败:', err);
-    wx.showToast({ title: '广告加载失败，请稍后重试', icon: 'none' });
+    wx.showToast({ title: '广告暂时不可用，请稍后再试', icon: 'none' });
     this.setData({ showAd: false });
   },
 
   onAdClose() {
     this.setData({ showAd: false });
-    // 广告看完 → 调用后端解锁
     this.unlockPremium();
   },
 
@@ -341,26 +344,20 @@ Page({
       wx.showLoading({ title: '解锁中…' });
       const res = await wx.cloud.callFunction({
         name: 'userManager',
-        data: {
-          action: 'unlockPremium'
-        }
+        data: { action: 'unlockPremium' }
       });
-
       wx.hideLoading();
       if (res.result && res.result.success) {
-        this.setData({
-          isPremium: true,
-          dailyCount: res.result.data.dailyCount
-        });
+        const newCount = res.result.data.dailyCount;
+        this.setData({ isPremium: true, dailyCount: newCount });
         app.globalData.isPremium = true;
-        app.globalData.dailyCount = res.result.data.dailyCount;
-        wx.showToast({ title: '高级会员已解锁！+10次', icon: 'success' });
+        app.globalData.dailyCount = newCount;
+        wx.showToast({ title: '已解锁！今日额外 +10 次', icon: 'success' });
       } else {
-        throw new Error(res.result.message || '解锁失败');
+        throw new Error('解锁失败');
       }
     } catch (err) {
       wx.hideLoading();
-      console.error('解锁失败:', err);
       wx.showToast({ title: '解锁失败，请稍后重试', icon: 'none' });
     }
   }

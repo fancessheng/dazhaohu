@@ -1,51 +1,83 @@
-<!-- 首页 - 简历上传 + 岗位信息 + 生成话术 -->
-<view class="container">
-  <!-- 顶部次数提示 -->
-  <view class="quota-bar">
-    <view class="quota-info">
-      <text class="quota-label">今日剩余</text>
-      <text class="quota-count">{{dailyCount}}</text>
-      <text class="quota-label">次</text>
-      <text wx:if="{{isPremium}}" class="tag tag-success">高级会员</text>
+<!-- 首页 - 求职打招呼 -->
+<view class="page">
+
+  <!-- 顶部 Header -->
+  <view class="header">
+    <view class="header-left">
+      <text class="header-title">求职打招呼</text>
+      <text class="header-sub">AI 帮你写开场白</text>
     </view>
-    <view wx:if="{{dailyCount === 0 && !isPremium}}" class="unlock-btn" bindtap="watchAd">
-      看广告解锁10次 ▶
+    <view class="quota-pill" bindtap="onQuotaTap">
+      <text class="quota-num">{{dailyCount}}</text>
+      <text class="quota-label">次</text>
+      <text wx:if="{{isPremium}}" class="premium-dot">●</text>
     </view>
   </view>
 
-  <!-- 步骤一：简历信息 -->
-  <view class="card">
-    <view class="step-header">
-      <view class="step-badge">1</view>
-      <text class="step-title">我的简历</text>
+  <!-- ========== 模块一：选择岗位 ========== -->
+  <view class="section">
+    <view class="section-header">
+      <view class="section-badge">1</view>
+      <text class="section-title">目标岗位</text>
+      <text class="section-required">*必填</text>
     </view>
-    <view class="step-desc">AI 需要了解你的优势才能写出针对性话术</view>
 
-    <view class="resume-modes">
-      <!-- 模式切换 -->
-      <view class="mode-tabs">
-        <view class="mode-tab {{resumeMode === 'upload' ? 'active' : ''}}" bindtap="switchResumeMode" data-mode="upload">上传文件</view>
-        <view class="mode-tab {{resumeMode === 'paste' ? 'active' : ''}}" bindtap="switchResumeMode" data-mode="paste">粘贴文字</view>
+    <!-- 快选岗位标签 -->
+    <view class="job-tags">
+      <view 
+        wx:for="{{jobTypes}}" 
+        wx:key="id"
+        class="job-tag {{selectedJobId === item.id ? 'job-tag-active' : ''}}"
+        bindtap="selectJob"
+        data-id="{{item.id}}"
+        data-name="{{item.name}}"
+        data-desc="{{item.desc}}"
+      >
+        <text class="job-tag-icon">{{item.icon}}</text>
+        <text class="job-tag-name">{{item.name}}</text>
       </view>
+    </view>
 
-      <!-- 上传模式 -->
-      <view wx:if="{{resumeMode === 'upload'}}" class="upload-area" bindtap="uploadResume">
-        <block wx:if="{{!resumeFile}}">
-          <view class="upload-icon">📄</view>
-          <view class="upload-text">点击上传简历</view>
-          <view class="upload-hint">支持 PDF、Word、图片格式</view>
-        </block>
-        <block wx:else>
-          <view class="upload-icon">✅</view>
-          <view class="upload-text">{{resumeFile.name}}</view>
-          <view class="upload-hint">点击重新上传</view>
-        </block>
+    <!-- 手动输入框（展开） -->
+    <view class="custom-job-row" bindtap="toggleCustomJob">
+      <text class="custom-job-label">{{customJobExpanded ? '▲ 收起自定义' : '✏️ 手动输入其他岗位'}}</text>
+    </view>
+    <view wx:if="{{customJobExpanded}}" class="custom-job-input">
+      <input 
+        placeholder="输入岗位名称，如：UI设计师、产品助理…"
+        value="{{customJobName}}"
+        bindinput="onCustomJobInput"
+        maxlength="20"
+      />
+    </view>
+
+    <!-- 当前已选岗位展示 -->
+    <view wx:if="{{currentJobName}}" class="selected-job-bar">
+      <text class="selected-job-label">已选：</text>
+      <text class="selected-job-name">{{currentJobName}}</text>
+    </view>
+
+    <!-- 我的简历（折叠入口） -->
+    <view class="resume-entry" bindtap="toggleResume">
+      <view class="resume-entry-left">
+        <text class="resume-entry-icon">{{resumeText.length > 10 ? '✅' : '📋'}}</text>
+        <view>
+          <text class="resume-entry-title">我的简历</text>
+          <text class="resume-entry-desc">{{resumeText.length > 10 ? '已填写，点击编辑' : '补充简历让话术更精准（可选）'}}</text>
+        </view>
       </view>
+      <text class="resume-entry-arrow">{{resumeExpanded ? '▲' : '▼'}}</text>
+    </view>
 
-      <!-- 粘贴模式 -->
+    <!-- 简历内容（展开） -->
+    <view wx:if="{{resumeExpanded}}" class="resume-panel">
+      <view class="resume-mode-tabs">
+        <view class="rtab {{resumeMode === 'paste' ? 'rtab-active' : ''}}" bindtap="switchResumeMode" data-mode="paste">粘贴文字</view>
+        <view class="rtab {{resumeMode === 'upload' ? 'rtab-active' : ''}}" bindtap="switchResumeMode" data-mode="upload">上传文件</view>
+      </view>
       <view wx:if="{{resumeMode === 'paste'}}" class="textarea-wrapper">
-        <textarea 
-          placeholder="请在此粘贴你的简历内容，包括：教育背景、工作经历、项目经验、技能特长等…"
+        <textarea
+          placeholder="粘贴简历内容，包括：教育背景、工作/实习经历、项目经验、技能特长…"
           value="{{resumeText}}"
           bindinput="onResumeInput"
           maxlength="5000"
@@ -53,45 +85,39 @@
         />
         <view class="char-count">{{resumeText.length}}/5000</view>
       </view>
-
-      <!-- 简历解析状态 -->
-      <view wx:if="{{resumeParsed}}" class="parse-success">
-        <text class="parse-icon">✨</text>
-        <text>简历解析完成</text>
+      <view wx:if="{{resumeMode === 'upload'}}" class="upload-area" bindtap="uploadResume">
+        <block wx:if="{{!resumeFile}}">
+          <text class="upload-icon">📄</text>
+          <text class="upload-text">点击上传简历</text>
+          <text class="upload-hint">支持 PDF、Word、图片</text>
+        </block>
+        <block wx:else>
+          <text class="upload-icon">✅</text>
+          <text class="upload-text">{{resumeFile.name}}</text>
+          <text class="upload-hint">点击重新上传</text>
+        </block>
       </view>
     </view>
   </view>
 
-  <!-- 步骤二：岗位信息 -->
-  <view class="card">
-    <view class="step-header">
-      <view class="step-badge">2</view>
-      <text class="step-title">岗位信息</text>
+  <!-- ========== 模块二：岗位信息 ========== -->
+  <view class="section">
+    <view class="section-header">
+      <view class="section-badge">2</view>
+      <text class="section-title">投递职位</text>
+      <text class="section-required">*必填</text>
     </view>
-    <view class="step-desc">获取你想申请的岗位要求，让话术更有针对性</view>
+    <text class="section-desc">粘贴 BOSS 直聘上的职位描述，或上传截图</text>
 
+    <!-- 输入模式切换 -->
     <view class="mode-tabs">
-      <view class="mode-tab {{jdMode === 'screenshot' ? 'active' : ''}}" bindtap="switchJDMode" data-mode="screenshot">截图识别</view>
-      <view class="mode-tab {{jdMode === 'paste' ? 'active' : ''}}" bindtap="switchJDMode" data-mode="paste">粘贴JD</view>
+      <view class="mtab {{jdMode === 'paste' ? 'mtab-active' : ''}}" bindtap="switchJDMode" data-mode="paste">粘贴 JD 文字</view>
+      <view class="mtab {{jdMode === 'screenshot' ? 'mtab-active' : ''}}" bindtap="switchJDMode" data-mode="screenshot">上传截图</view>
     </view>
 
-    <!-- 截图模式 -->
-    <view wx:if="{{jdMode === 'screenshot'}}" class="upload-area" bindtap="uploadScreenshot">
-      <block wx:if="{{!jdImage}}">
-        <view class="upload-icon">📸</view>
-        <view class="upload-text">上传岗位截图</view>
-        <view class="upload-hint">在 BOSS 直聘页面截图岗位信息即可</view>
-      </block>
-      <block wx:else>
-        <image src="{{jdImage}}" mode="widthFix" class="jd-preview" />
-        <view class="upload-hint">点击重新上传</view>
-      </block>
-    </view>
-
-    <!-- 粘贴模式 -->
     <view wx:if="{{jdMode === 'paste'}}" class="textarea-wrapper">
-      <textarea 
-        placeholder="请粘贴招聘岗位的职责描述（JD），包括：岗位名称、职责要求、任职资格等…"
+      <textarea
+        placeholder="把 BOSS 直聘岗位页面的描述内容复制粘贴到这里，包括：岗位职责、任职要求等…"
         value="{{jdText}}"
         bindinput="onJDInput"
         maxlength="3000"
@@ -100,57 +126,67 @@
       <view class="char-count">{{jdText.length}}/3000</view>
     </view>
 
-    <!-- 岗位解析状态 -->
-    <view wx:if="{{jdParsed}}" class="parse-success">
-      <text class="parse-icon">✨</text>
-      <text>岗位信息识别完成</text>
+    <view wx:if="{{jdMode === 'screenshot'}}" class="upload-area" bindtap="uploadScreenshot">
+      <block wx:if="{{!jdImage}}">
+        <text class="upload-icon">📸</text>
+        <text class="upload-text">上传岗位页面截图</text>
+        <text class="upload-hint">截 BOSS 直聘岗位详情页即可</text>
+      </block>
+      <block wx:else>
+        <image src="{{jdImage}}" mode="widthFix" class="jd-preview" />
+        <text class="upload-hint">点击重新上传</text>
+      </block>
     </view>
+
+    <view wx:if="{{jdParsed}}" class="parse-ok">✨ 岗位信息识别完成</view>
   </view>
 
-  <!-- 步骤三：生成话术 -->
-  <view class="card">
-    <view class="step-header">
-      <view class="step-badge">3</view>
-      <text class="step-title">生成打招呼话术</text>
+  <!-- ========== 模块三：生成话术 ========== -->
+  <view class="section generate-section">
+    <view class="section-header">
+      <view class="section-badge">3</view>
+      <text class="section-title">生成打招呼话术</text>
     </view>
 
-    <!-- 生成按钮 -->
-    <button 
-      class="btn-primary generate-btn"
+    <button
+      class="btn-generate {{canGenerate ? '' : 'btn-disabled'}}"
       bindtap="generateScript"
       loading="{{isGenerating}}"
-      disabled="{{!canGenerate}}"
     >
-      {{isGenerating ? 'AI 正在撰写中…' : '✨ AI 生成打招呼话术'}}
+      <text wx:if="{{!isGenerating}}">✨ 立即生成</text>
+      <text wx:else>AI 正在撰写中…</text>
     </button>
 
-    <!-- 无法生成时的提示 -->
-    <view wx:if="{{!canGenerate && !isGenerating}}" class="generate-hint">
-      <text wx:if="{{dailyCount === 0 && !isPremium}}">今日次数已用完，点击顶部按钮看广告解锁</text>
-      <text wx:elif="{{!hasResume}}">请先上传或粘贴简历信息</text>
-      <text wx:elif="{{!hasJD}}">请先上传截图或粘贴岗位信息</text>
+    <!-- 条件未满足时的提示 -->
+    <view wx:if="{{!canGenerate && !isGenerating}}" class="hint-row">
+      <text wx:if="{{dailyCount <= 0 && !isPremium}}" class="hint-text warn">今日次数已用完 · 
+        <text class="hint-link" bindtap="watchAd">看广告解锁 10 次 ▶</text>
+      </text>
+      <text wx:elif="{{!currentJobName}}" class="hint-text">请先选择目标岗位</text>
+      <text wx:elif="{{!hasJD}}" class="hint-text">请填写投递职位信息</text>
     </view>
 
-    <!-- 生成状态提示 -->
-    <view wx:if="{{isGenerating}}" class="generating-status">
-      <view class="generating-step {{currentStep >= 1 ? 'done' : ''}}">
+    <!-- 生成动画步骤 -->
+    <view wx:if="{{isGenerating}}" class="steps-anim">
+      <view class="step-item {{currentStep >= 1 ? 'step-done' : ''}}">
         <view class="step-dot"></view>
-        <text>分析你的简历优势</text>
+        <text>分析简历与岗位匹配点</text>
       </view>
-      <view class="generating-step {{currentStep >= 2 ? 'done' : ''}}">
+      <view class="step-item {{currentStep >= 2 ? 'step-done' : ''}}">
         <view class="step-dot"></view>
-        <text>理解岗位核心要求</text>
+        <text>提炼你的核心优势</text>
       </view>
-      <view class="generating-step {{currentStep >= 3 ? 'done' : ''}}">
+      <view class="step-item {{currentStep >= 3 ? 'step-done' : ''}}">
         <view class="step-dot"></view>
-        <text>撰写个性化话术</text>
+        <text>撰写个性化打招呼话术</text>
       </view>
     </view>
   </view>
+
 </view>
 
-<!-- 广告组件 -->
-<ad 
+<!-- 激励视频广告 -->
+<ad
   wx:if="{{showAd}}"
   unit-id="your-ad-unit-id"
   bindload="onAdLoad"
