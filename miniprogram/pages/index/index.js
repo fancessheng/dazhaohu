@@ -3,16 +3,15 @@ const app = getApp();
 
 // 10个 0-3年求职者最常选择的岗位（基于BOSS直聘热门岗位调研）
 const JOB_TYPES = [
-  { id: 'media', name: '新媒体运营', icon: '📱', desc: '内容创作、社媒运营、粉丝增长' },
-  { id: 'design', name: '平面设计', icon: '🎨', desc: 'VI设计、海报、品牌视觉' },
-  { id: 'fe', name: '前端开发', icon: '💻', desc: 'HTML/CSS/JS、Vue、React' },
-  { id: 'product', name: '产品助理', icon: '📊', desc: '需求分析、原型设计、产品迭代' },
-  { id: 'operate', name: '电商运营', icon: '🛒', desc: '淘宝/抖店运营、直播带货' },
-  { id: 'sale', name: '销售/BD', icon: '🤝', desc: '客户开发、商务拓展、销售转化' },
-  { id: 'advert', name: '信息流优化', icon: '📈', desc: '竞价推广、ROI优化、数据分析' },
-  { id: 'hr', name: 'HR招聘', icon: '👥', desc: '简历筛选、面试安排、员工关系' },
-  { id: 'finance', name: '财务/会计', icon: '💰', desc: '会计核算、财务报表、税务申报' },
-  { id: 'customer', name: '客服/运营', icon: '🎧', desc: '用户服务、投诉处理、满意度提升' },
+  { id: 'media',   name: '新媒体运营', icon: '📱', desc: '内容创作、社媒运营、粉丝增长' },
+  { id: 'design',  name: '平面设计',   icon: '🎨', desc: 'VI设计、海报、品牌视觉' },
+  { id: 'fe',      name: '前端开发',   icon: '💻', desc: 'HTML/CSS/JS、Vue、React' },
+  { id: 'product', name: '产品助理',   icon: '📊', desc: '需求分析、原型设计、产品迭代' },
+  { id: 'operate', name: '电商运营',   icon: '🛒', desc: '淘宝/抖店运营、直播带货' },
+  { id: 'sale',    name: '销售/BD',    icon: '🤝', desc: '客户开发、商务拓展、销售转化' },
+  { id: 'advert',  name: '信息流优化', icon: '📈', desc: '竞价推广、ROI优化、数据分析' },
+  { id: 'hr',      name: 'HR招聘',     icon: '👥', desc: '简历筛选、面试安排、员工关系' },
+  { id: 'finance', name: '财务/会计',  icon: '💰', desc: '会计核算、财务报表、税务申报' },
 ];
 
 Page({
@@ -50,6 +49,10 @@ Page({
 
     // 广告
     showAd: false,
+
+    // 计算状态（替代 getter，小程序不支持 Page getter）
+    canGenerate: false,
+    hasJD: false,
   },
 
   // ======= 生命周期 =======
@@ -70,6 +73,17 @@ Page({
       dailyCount: g.dailyCount || 0,
       isPremium: g.isPremium || false,
     });
+    this._updateFlags();
+  },
+
+  // 统一计算 canGenerate / hasJD（替代 getter，真机不支持 Page getter）
+  _updateFlags() {
+    const d = this.data;
+    const countOk = (d.dailyCount > 0) || d.isPremium;
+    const jobOk = (d.currentJobName || '').length > 0;
+    const hasJD = d.jdParsed || ((d.jdText || '').trim().length > 10);
+    const canGenerate = countOk && jobOk && hasJD;
+    this.setData({ canGenerate, hasJD });
   },
 
   // 点击次数区域
@@ -105,16 +119,17 @@ Page({
       customJobExpanded: false,
       customJobName: '',
     });
+    this._updateFlags();
   },
 
   toggleCustomJob() {
     const expand = !this.data.customJobExpanded;
     this.setData({
       customJobExpanded: expand,
-      // 展开时清空快选
       selectedJobId: expand ? '' : this.data.selectedJobId,
       currentJobName: expand ? (this.data.customJobName || '') : this.data.currentJobName,
     });
+    this._updateFlags();
   },
 
   onCustomJobInput(e) {
@@ -125,6 +140,7 @@ Page({
       currentJobDesc: '',
       selectedJobId: '',
     });
+    this._updateFlags();
   },
 
   // ======= 简历 =======
@@ -139,6 +155,7 @@ Page({
 
   onResumeInput(e) {
     this.setData({ resumeText: e.detail.value, resumeParsed: false });
+    this._updateFlags();
   },
 
   uploadResume() {
@@ -176,6 +193,7 @@ Page({
         });
         wx.hideLoading();
         wx.showToast({ title: '简历解析成功', icon: 'success' });
+        this._updateFlags();
       } else {
         throw new Error(parseRes.result.message || '解析失败');
       }
@@ -193,6 +211,7 @@ Page({
 
   onJDInput(e) {
     this.setData({ jdText: e.detail.value, jdParsed: false });
+    this._updateFlags();
   },
 
   uploadScreenshot() {
@@ -230,6 +249,7 @@ Page({
         });
         wx.hideLoading();
         wx.showToast({ title: '岗位信息识别成功', icon: 'success' });
+        this._updateFlags();
       } else {
         throw new Error('识别失败');
       }
@@ -241,20 +261,8 @@ Page({
 
   // ======= 生成话术 =======
 
-  get canGenerate() {
-    const { dailyCount, isPremium, currentJobName, jdText, jdParsed } = this.data;
-    const countOk = dailyCount > 0 || isPremium;
-    const jobOk = (currentJobName || '').length > 0;
-    const jdOk = jdParsed || (jdText || '').trim().length > 10;
-    return countOk && jobOk && jdOk;
-  },
-
-  get hasJD() {
-    return this.data.jdParsed || (this.data.jdText || '').trim().length > 10;
-  },
-
   generateScript() {
-    if (!this.canGenerate) {
+    if (!this.data.canGenerate) {
       if (this.data.dailyCount <= 0 && !this.data.isPremium) {
         this.watchAd();
       } else if (!this.data.currentJobName) {

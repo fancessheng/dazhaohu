@@ -12,8 +12,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 28rpx 32rpx 24rpx;
-  background: var(--color-white);
-  border-bottom: 1rpx solid var(--color-border);
+  background: linear-gradient(135deg, #0ABFBC 0%, #2DD4CF 60%, #FFFFFF 100%);
 }
 
 .header-left {
@@ -25,23 +24,24 @@
 .header-title {
   font-size: 36rpx;
   font-weight: 700;
-  color: var(--color-primary);
+  color: #FFFFFF;
   letter-spacing: 1rpx;
+  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.1);
 }
 
 .header-sub {
   font-size: 22rpx;
-  color: var(--color-text-muted);
+  color: rgba(255,255,255,0.85);
 }
 
 .quota-pill {
   display: flex;
   align-items: baseline;
   gap: 4rpx;
-  background: var(--color-primary-bg);
+  background: rgba(255,255,255,0.95);
   border-radius: 30rpx;
   padding: 10rpx 22rpx;
-  position: relative;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.08);
 }
 
 .quota-num {
@@ -114,19 +114,22 @@
 .job-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 16rpx;
+  gap: 14rpx;
   margin: 16rpx 0 8rpx;
 }
 
 .job-tag {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8rpx;
-  padding: 14rpx 22rpx;
-  border-radius: 40rpx;
+  /* 3列等宽：(100% - 2个间距14rpx) / 3 */
+  width: calc(33.333% - 10rpx);
+  padding: 18rpx 0;
+  border-radius: 16rpx;
   background: var(--color-bg);
   border: 2rpx solid var(--color-border);
-  transition: all 0.2s;
+  box-sizing: border-box;
 }
 
 .job-tag-active {
@@ -140,7 +143,7 @@
 }
 
 .job-tag-name {
-  font-size: 26rpx;
+  font-size: 24rpx;
   color: var(--color-text-secondary);
   white-space: nowrap;
 }

@@ -19,7 +19,7 @@
     <view class="section-header">
       <view class="section-badge">1</view>
       <text class="section-title">目标岗位</text>
-      <text class="section-required">*必填</text>
+      <text class="section-required">*必选</text>
     </view>
 
     <!-- 快选岗位标签 -->
@@ -105,7 +105,7 @@
     <view class="section-header">
       <view class="section-badge">2</view>
       <text class="section-title">投递职位</text>
-      <text class="section-required">*必填</text>
+      <text class="section-required">*必选</text>
     </view>
     <text class="section-desc">粘贴 BOSS 直聘上的职位描述，或上传截图</text>
 
@@ -185,12 +185,12 @@
 
 </view>
 
-<!-- 激励视频广告 -->
+<!-- 激励视频广告（未开通流量主时自动不显示，不影响正常使用） -->
 <ad
   wx:if="{{showAd}}"
   unit-id="your-ad-unit-id"
+  ad-type="rewarded-video"
   bindload="onAdLoad"
   binderror="onAdError"
   bindclose="onAdClose"
-  type="video"
 />
